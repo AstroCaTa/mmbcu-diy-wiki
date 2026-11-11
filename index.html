@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYM MMBCU 158 DIY 保養知識庫 | Karpathy LLM Wiki</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            mamba: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22',
+            },
+            carbon: {
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    code, pre, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #065f46;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-carbon-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-mamba-500 selection:text-white">
+
+  <!-- Header Banner -->
+  <header class="border-b border-mamba-900/60 bg-carbon-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-mamba-500 to-emerald-800 flex items-center justify-center shadow-lg shadow-mamba-950/50">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-black text-lg tracking-wider text-white">SYM MMBCU 158</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-mamba-900 text-mamba-300 border border-mamba-700/50">LLM Wiki 模式</span>
+          </div>
+          <p class="text-xs text-slate-400">曼巴蛇跑旅 DIY 保養知識庫 · 機油 / 齒輪油全指南</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Badges -->
+      <div class="hidden md:flex items-center space-x-3 text-xs">
+        <span class="px-2.5 py-1 rounded-md bg-carbon-800 border border-slate-700 text-slate-300">
+          代號: <strong class="text-emerald-400">TDA16T1</strong>
+        </span>
+        <span class="px-2.5 py-1 rounded-md bg-carbon-800 border border-slate-700 text-slate-300">
+          交換量: <strong class="text-amber-400">800cc~1000cc</strong>
+        </span>
+        <span class="px-2.5 py-1 rounded-md bg-carbon-800 border border-slate-700 text-slate-300">
+          規範: <strong class="text-cyan-400">AGENTS.md</strong>
+        </span>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 overflow-x-auto custom-scroll text-sm border-t border-slate-800/80">
+      <button onclick="switchTab('overview')" id="tab-btn-overview" class="tab-btn px-4 py-3 font-medium border-b-2 border-mamba-500 text-mamba-400 flex items-center space-x-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        <span>知識庫總覽</span>
+      </button>
+      <button onclick="switchTab('engine-oil')" id="tab-btn-engine-oil" class="tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+        <span>機油更換 SOP</span>
+      </button>
+      <button onclick="switchTab('gear-oil')" id="tab-btn-gear-oil" class="tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span>齒輪油更換 SOP</span>
+      </button>
+      <button onclick="switchTab('cheatsheet')" id="tab-btn-cheatsheet" class="tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        <span>規格與扭力速查</span>
+      </button>
+      <button onclick="switchTab('tracker')" id="tab-btn-tracker" class="tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>DIY 保養紀錄簿</span>
+      </button>
+      <button onclick="switchTab('changelog')" id="tab-btn-changelog" class="tab-btn px-4 py-3 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2 whitespace-nowrap transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <span>Wiki 操作日誌</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- TAB 1: 知識庫總覽 (Overview) -->
+    <section id="pane-overview" class="tab-pane space-y-8">
+      <!-- Hero Card -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-carbon-900 via-mamba-950 to-carbon-900 border border-mamba-800/50 p-6 sm:p-8 shadow-2xl">
+        <div class="relative z-10 max-w-3xl space-y-4">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-mamba-500/10 border border-mamba-500/30 text-mamba-400 text-xs font-semibold">
+            <span>Karpathy LLM Wiki Pattern 実踐</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            MMBCU 158 持久化 DIY 保養知識庫
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            不同於傳統 RAG 每次查詢都重新檢索零散文檔，LLM Wiki 模式由 AI 代理人持續編譯、維護與驗證結構化 Markdown 庫。我們為 SYM 曼巴 158 建立了包含原廠規格、實戰盲點排除、扭力速查與保養履歷的完整系統。
+          </p>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <button onclick="switchTab('engine-oil')" class="px-4 py-2 bg-mamba-600 hover:bg-mamba-500 text-white rounded-lg font-medium text-sm transition-colors shadow-lg shadow-mamba-900/50">
+              檢視機油更換 SOP →
+            </button>
+            <button onclick="switchTab('cheatsheet')" class="px-4 py-2 bg-carbon-800 hover:bg-carbon-700 border border-slate-700 text-slate-200 rounded-lg font-medium text-sm transition-colors">
+              查詢扭力速查表
+            </button>
+          </div>
+        </div>
+        <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+          <svg class="w-96 h-96 text-mamba-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+      </div>
+
+      <!-- Karpathy 3-Layer Architecture Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-xl bg-carbon-900 border border-slate-800 hover:border-mamba-700/60 transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold mb-4">
+            01
+          </div>
+          <h2 class="text-lg font-bold text-white mb-2">第一層：原始資料層 (Raw Sources)</h2>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">
+            存放於 <code class="text-blue-300">raw/</code>。此層為「單一真相來源（Source of Truth）」，性質為<strong>唯讀且不可變 (Immutable)</strong>。包含原廠維修手冊與車友論壇筆記。
+          </p>
+          <div class="text-xs text-slate-500 font-mono">
+            • sym-mmbcu-manual-excerpt.md<br>
+            • diy-oil-change-notes.md
+          </div>
+        </div>
+
+        <div class="p-6 rounded-xl bg-carbon-900 border border-slate-800 hover:border-mamba-700/60 transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold mb-4">
+            02
+          </div>
+          <h2 class="text-lg font-bold text-white mb-2">第二層：持久知識庫 (The Wiki)</h2>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">
+            存放於 <code class="text-emerald-300">wiki/</code>。由 AI 代理人全權編譯、維護交叉鏈接與更新實體。包含目錄索引、操作日誌、實體頁與 SOP 指南。
+          </p>
+          <div class="text-xs text-slate-500 font-mono">
+            • index.md & log.md<br>
+            • entities/ & guides/ & records/
+          </div>
+        </div>
+
+        <div class="p-6 rounded-xl bg-carbon-900 border border-slate-800 hover:border-mamba-700/60 transition-colors">
+          <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold mb-4">
+            03
+          </div>
+          <h2 class="text-lg font-bold text-white mb-2">第三層：維護規範 (The Schema)</h2>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">
+            由根目錄 <code class="text-amber-300">AGENTS.md</code> 擔綱。定義了 AI 如何進行 Ingest、Query、Lint 操作、文件命名規格與網頁同步準則。
+          </p>
+          <div class="text-xs text-slate-500 font-mono">
+            • Ingest / Query / Lint SOP<br>
+            • 嚴格事實錨定與命名規則
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Specifications Grid -->
+      <div class="bg-carbon-900 rounded-xl border border-slate-800 p-6 space-y-4">
+        <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+          <span>MMBCU 158 核心保養數據一覽</span>
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="p-4 rounded-lg bg-carbon-800/60 border border-slate-700/50">
+            <span class="text-xs text-slate-400 block mb-1">機油標準更換量</span>
+            <span class="text-xl font-bold text-emerald-400">800 ~ 850 cc</span>
+            <span class="text-[11px] text-slate-500 block mt-1">(手冊記載 1000cc)</span>
+          </div>
+          <div class="p-4 rounded-lg bg-carbon-800/60 border border-slate-700/50">
+            <span class="text-xs text-slate-400 block mb-1">齒輪油標準更換量</span>
+            <span class="text-xl font-bold text-cyan-400">100 ~ 120 cc</span>
+            <span class="text-[11px] text-slate-500 block mt-1">(單條牙膏裝)</span>
+          </div>
+          <div class="p-4 rounded-lg bg-carbon-800/60 border border-slate-700/50">
+            <span class="text-xs text-slate-400 block mb-1">側洩油螺栓扭力</span>
+            <span class="text-xl font-bold text-amber-400">1.2~1.5 kgf-m</span>
+            <span class="text-[11px] text-slate-500 block mt-1">12mm 套筒 / 12~15 N-m</span>
+          </div>
+          <div class="p-4 rounded-lg bg-carbon-800/60 border border-slate-700/50">
+            <span class="text-xs text-slate-400 block mb-1">齒輪箱螺栓扭力</span>
+            <span class="text-xl font-bold text-rose-400">1.0~1.4 kgf-m</span>
+            <span class="text-[11px] text-slate-500 block mt-1">10mm 套筒 / 防滑牙</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: 機油更換 SOP (Engine Oil) -->
+    <section id="pane-engine-oil" class="tab-pane hidden space-y-6">
+      <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <h2 class="text-2xl font-bold text-white">MMBCU 158 引擎機油更換 SOP</h2>
+          <p class="text-sm text-slate-400">對應文件: <code class="text-emerald-400 font-mono">wiki/guides/engine-oil-change.md</code></p>
+        </div>
+        <span class="px-3 py-1 rounded bg-mamba-900/60 border border-mamba-700/60 text-mamba-300 text-xs font-semibold">
+          建議週期: 每 1,000~2,000 km
+        </span>
+      </div>
+
+      <!-- Alert: 800cc vs 1000cc -->
+      <div class="p-4 rounded-xl bg-amber-950/40 border border-amber-600/40 text-amber-200 text-sm flex items-start space-x-3">
+        <svg class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <div>
+          <strong class="font-bold">容量盲點提醒（800cc vs 1,000cc）:</strong>
+          原廠手冊標明更換容量 1,000cc，但一般使用 12mm 側邊螺栓重力洩油實測僅排出約 800~850cc。若直接倒入整整一瓶 1,000cc，極易造成油位過高，引起引擎運轉阻力過大、起步悶重，並加劇吹漏氣噴濺至空濾箱。<strong>建議先注入 800cc，發動後依油尺確認！</strong>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Cards -->
+      <div class="space-y-4">
+        <!-- Step 1 -->
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            1
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">立主腳架、暖車 2 分鐘並拔起機油尺</h3>
+            <p class="text-sm text-slate-400">
+              車輛停於平地立起主腳架。發動引擎運轉 2~3 分鐘使機油微溫增加流動性後熄火。旋出車身右側機油尺擦乾淨，利於曲軸箱內部透氣加速下方排油。
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            2
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">拆卸左側底 12mm 洩油螺栓</h3>
+            <p class="text-sm text-slate-400">
+              將接油盆置於左側車底洩油孔下，使用 <strong>12mm 六角套筒或梅花扳手</strong>逆時針鬆開螺栓。舊機油洩放末期，可手扶車身向左微傾 10~15 度，排空死角殘油。
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            3
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">機油濾網清潔（新車 300km 或每 3,000~5,000km）</h3>
+            <p class="text-sm text-slate-400">
+              使用 <strong>17mm 套筒</strong>旋開底部濾網蓋（內有彈簧，手需微頂住）。取出金屬濾網與磁鐵彈簧，以煞車零件清潔劑噴洗鐵屑。注意：彈簧尖端朝向濾網，O-ring 油封塗微量機油潤滑後裝回，扭力鎖定 <strong>2.0 ~ 2.5 kgf-m</strong>。
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            4
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">換上全新 M12 鋁墊片，設定扭力 12~15 N-m 鎖緊</h3>
+            <p class="text-sm text-slate-400">
+              清潔 12mm 螺栓螺牙，套入新 M12 鋁合金墊片。先以手指順旋到底，再以扭力扳手鎖定 <strong>1.2 ~ 1.5 kgf-m (12 ~ 15 N-m)</strong>，確保迫緊密封不滲漏。
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            5
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">注入新機油 800~850cc 並檢測油尺</h3>
+            <p class="text-sm text-slate-400">
+              使用長頸漏斗插入注油口，先倒入 800cc 新油。發動怠速 1 分鐘後熄火靜置 3 分鐘。擦乾機油尺，<strong>直直插到底（切勿旋入螺牙）</strong>檢驗，油位落在網格 70%~80% 處即為最佳！
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            6
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">儀表「OIL CHANGE」警示燈長按 S 鍵歸零</h3>
+            <p class="text-sm text-slate-400">
+              開電門，切換儀表至總里程（ODO）畫面，長按「S」按鈕約 3~5 秒直到 OIL CHANGE 燈號熄滅，電腦里程重新累計。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: 齒輪油更換 SOP (Gear Oil) -->
+    <section id="pane-gear-oil" class="tab-pane hidden space-y-6">
+      <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <h2 class="text-2xl font-bold text-white">MMBCU 158 齒輪油更換 SOP</h2>
+          <p class="text-sm text-slate-400">對應文件: <code class="text-cyan-400 font-mono">wiki/guides/gear-oil-change.md</code></p>
+        </div>
+        <span class="px-3 py-1 rounded bg-cyan-950 border border-cyan-800 text-cyan-300 text-xs font-semibold">
+          建議週期: 每 3,000~5,000 km
+        </span>
+      </div>
+
+      <!-- Warning: Strip Thread Risk -->
+      <div class="p-4 rounded-xl bg-rose-950/40 border border-rose-600/40 text-rose-200 text-sm flex items-start space-x-3">
+        <svg class="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <div>
+          <strong class="font-bold">滑牙高風險警告（鋁合金齒輪箱）:</strong>
+          MMBCU 齒輪箱本體為鋁合金材質，10mm 螺栓螺牙極淺！鎖緊扭力僅 <strong>1.0 ~ 1.4 kgf-m (10 ~ 14 N-m)</strong>。強烈建議使用扭力扳手，若無扭力扳手，手感轉到底後順手帶緊 1/8 圈即可，切勿用全身力氣硬催，否則必崩牙！
+        </div>
+      </div>
+
+      <!-- Steps -->
+      <div class="space-y-4">
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-cyan-600/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            1
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">防呆第一步：先拆上方 10mm 注油螺栓</h3>
+            <p class="text-sm text-slate-400">
+              在拆下方洩油孔前，<strong>務必先將上方 10mm 注油螺栓拆下</strong>。確保上方未咬死卡死，才能安全洩油。
+            </p>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-cyan-600/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            2
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">拆卸下方 10mm 洩油螺栓並排空舊油</h3>
+            <p class="text-sm text-slate-400">
+              接油皿置於下方，以 10mm 梅花或套筒旋開洩油螺栓。舊齒輪油黏稠，靜待 3~5 分鐘滴乾，最後手動轉動後輪半圈排出齒縫殘油。
+            </p>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-cyan-600/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            3
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">更換 M8 墊片，微扭力 10~14 N-m 鎖回洩油螺栓</h3>
+            <p class="text-sm text-slate-400">
+              清除螺栓金屬泥屑，換上全新 M8 華司墊片。徒手旋進到底，使用扭力扳手鎖定 <strong>1.0 ~ 1.4 kgf-m (10 ~ 14 N-m)</strong>。
+            </p>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-cyan-600/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            4
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">注入 100~120cc 齒輪油（嚴禁過量加注）</h3>
+            <p class="text-sm text-slate-400">
+              將原廠 85W-140 或 10W-30 條裝齒輪油斜剪管口，插入注油孔整條擠入（100~120cc）。加一條即可，切勿加注第二條以免爆軸承油封！
+            </p>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 flex items-start space-x-4">
+          <div class="w-8 h-8 rounded-full bg-cyan-600/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center font-bold flex-shrink-0">
+            5
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-base font-bold text-white">換新墊片鎖回注油螺栓並擦洗油漬</h3>
+            <p class="text-sm text-slate-400">
+              注油螺栓換裝新 M8 墊片，鎖緊至 10~14 N-m。噴灑煞車清洗劑擦除外殼溢油，確認碟盤乾淨無油。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: 規格與扭力速查 (Cheatsheet) -->
+    <section id="pane-cheatsheet" class="tab-pane hidden space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white">MMBCU 158 規格與扭力速查表</h2>
+          <p class="text-sm text-slate-400">對應文件: <code class="text-amber-400 font-mono">wiki/records/torque-and-capacity-cheatsheet.md</code></p>
+        </div>
+        <div class="w-full sm:w-64">
+          <input type="text" id="cheatsheet-search" oninput="filterCheatsheet()" placeholder="即時搜尋螺栓、扭力、容量..." class="w-full px-3 py-2 bg-carbon-900 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-mamba-500">
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-slate-800 bg-carbon-900 shadow-xl">
+        <table class="w-full text-left text-sm" id="cheatsheet-table">
+          <thead class="bg-carbon-800 text-slate-200 border-b border-slate-700 font-semibold text-xs uppercase tracking-wider">
+            <tr>
+              <th class="p-4">保養部位 / 項目</th>
+              <th class="p-4">工具尺寸</th>
+              <th class="p-4">螺牙規格</th>
+              <th class="p-4">標準扭力值</th>
+              <th class="p-4">更換量 / 耗材</th>
+              <th class="p-4">更換週期</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-slate-300">
+            <tr class="hover:bg-carbon-800/50 transition-colors">
+              <td class="p-4 font-bold text-white">引擎機油（側邊洩油螺栓）</td>
+              <td class="p-4 text-emerald-400 font-mono font-semibold">12mm 套筒</td>
+              <td class="p-4">M12 × P1.5</td>
+              <td class="p-4 font-mono text-amber-400 font-semibold">1.2 ~ 1.5 kgf-m (12~15 N-m)</td>
+              <td class="p-4">800~850cc / M12 鋁墊片</td>
+              <td class="p-4">1,000 ~ 2,000 km</td>
+            </tr>
+            <tr class="hover:bg-carbon-800/50 transition-colors">
+              <td class="p-4 font-bold text-white">引擎機油濾網（底部大螺蓋）</td>
+              <td class="p-4 text-emerald-400 font-mono font-semibold">17mm 套筒</td>
+              <td class="p-4">外六角濾網蓋</td>
+              <td class="p-4 font-mono text-amber-400 font-semibold">2.0 ~ 2.5 kgf-m (20~25 N-m)</td>
+              <td class="p-4">清洗金屬網 / 耐油 O-ring</td>
+              <td class="p-4">3,000 ~ 5,000 km</td>
+            </tr>
+            <tr class="hover:bg-carbon-800/50 transition-colors">
+              <td class="p-4 font-bold text-white">齒輪箱洩油螺栓（下方）</td>
+              <td class="p-4 text-cyan-400 font-mono font-semibold">10mm 梅花/套筒</td>
+              <td class="p-4">M8 × P1.25</td>
+              <td class="p-4 font-mono text-rose-400 font-semibold">1.0 ~ 1.4 kgf-m (10~14 N-m)</td>
+              <td class="p-4">100~120cc / M8 鋁墊片</td>
+              <td class="p-4">3,000 ~ 5,000 km</td>
+            </tr>
+            <tr class="hover:bg-carbon-800/50 transition-colors">
+              <td class="p-4 font-bold text-white">齒輪箱注油螺栓（上方）</td>
+              <td class="p-4 text-cyan-400 font-mono font-semibold">10mm 梅花/套筒</td>
+              <td class="p-4">M8 × P1.25</td>
+              <td class="p-4 font-mono text-rose-400 font-semibold">1.0 ~ 1.4 kgf-m (10~14 N-m)</td>
+              <td class="p-4">M8 鋁/銅華司墊片</td>
+              <td class="p-4">隨更換齒輪油更換</td>
+            </tr>
+            <tr class="hover:bg-carbon-800/50 transition-colors">
+              <td class="p-4 font-bold text-white">火星塞 (Spark Plug)</td>
+              <td class="p-4 text-slate-300 font-mono">16mm 火星塞套筒</td>
+              <td class="p-4">CPR8EA-9</td>
+              <td class="p-4 font-mono text-amber-400">1.0 ~ 1.2 kgf-m (10~12 N-m)</td>
+              <td class="p-4">間隙 0.8~0.9 mm</td>
+              <td class="p-4">10,000 km</td>
+            </tr>
+            <tr class="hover:bg-carbon-800/50 transition-colors">
+              <td class="p-4 font-bold text-white">空氣濾清器濾芯 (Air Filter)</td>
+              <td class="p-4 text-slate-300 font-mono">十字螺絲起子</td>
+              <td class="p-4">外蓋 6 顆螺絲</td>
+              <td class="p-4 font-mono text-slate-400">手動轉緊即可</td>
+              <td class="p-4">原廠紙質濾芯</td>
+              <td class="p-4">5,000 km 檢查/更換</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 5: DIY 保養記錄簿 (Interactive Tracker) -->
+    <section id="pane-tracker" class="tab-pane hidden space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <h2 class="text-2xl font-bold text-white">車主 DIY 保養記錄簿</h2>
+          <p class="text-sm text-slate-400">自動計算下次換油里程 · 支援瀏覽器本機儲存 (localStorage)</p>
+        </div>
+        <div class="flex space-x-2">
+          <button onclick="exportLogsCSV()" class="px-3 py-1.5 bg-carbon-800 hover:bg-carbon-700 border border-slate-700 text-xs font-medium text-slate-200 rounded-lg transition-colors flex items-center space-x-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span>匯出 CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Add Record Form Card -->
+      <div class="p-6 rounded-xl bg-carbon-900 border border-slate-800 space-y-4">
+        <h3 class="text-base font-bold text-emerald-400 flex items-center space-x-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>新增一筆保養紀錄</span>
+        </h3>
+        <form id="add-log-form" onsubmit="addMaintenanceRecord(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">保養日期</label>
+            <input type="date" id="log-date" required class="w-full px-3 py-2 bg-carbon-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-mamba-500">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">總里程 (km)</label>
+            <input type="number" id="log-mileage" min="0" placeholder="例如: 3500" required class="w-full px-3 py-2 bg-carbon-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-mamba-500">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">施作項目</label>
+            <select id="log-item" class="w-full px-3 py-2 bg-carbon-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-mamba-500">
+              <option value="換機油">更換機油</option>
+              <option value="換機油+齒輪油">更換機油 + 齒輪油</option>
+              <option value="換機油+清洗濾網">更換機油 + 清洗濾網</option>
+              <option value="換機油+齒輪油+空濾">大保養 (機油+齒輪油+空濾)</option>
+              <option value="自訂其他">自訂其他保養</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">使用油品規格</label>
+            <input type="text" id="log-oil-name" placeholder="例如: Motul 7100 10W40" class="w-full px-3 py-2 bg-carbon-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-mamba-500">
+          </div>
+          <div class="sm:col-span-2 lg:col-span-3">
+            <label class="block text-xs text-slate-400 mb-1">備註心得 (注入量、墊片狀態、車況反應)</label>
+            <input type="text" id="log-note" placeholder="例如: 機油加 820cc，更換 M12 鋁墊片，油尺位置在網格 75% 處" class="w-full px-3 py-2 bg-carbon-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-mamba-500">
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full py-2 bg-mamba-600 hover:bg-mamba-500 text-white font-medium rounded-lg text-sm transition-colors shadow">
+              儲存此筆紀錄
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Logs Table -->
+      <div class="overflow-x-auto rounded-xl border border-slate-800 bg-carbon-900 shadow-xl">
+        <table class="w-full text-left text-sm" id="records-table">
+          <thead class="bg-carbon-800 text-slate-200 border-b border-slate-700 font-semibold text-xs uppercase tracking-wider">
+            <tr>
+              <th class="p-4">日期</th>
+              <th class="p-4">行駛里程</th>
+              <th class="p-4">保養項目</th>
+              <th class="p-4">油品規格</th>
+              <th class="p-4">下次建議換油</th>
+              <th class="p-4">備註</th>
+              <th class="p-4 text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody id="records-tbody" class="divide-y divide-slate-800 text-slate-300">
+            <!-- Dynamically populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 6: LLM Wiki 變更日誌 (Changelog) -->
+    <section id="pane-changelog" class="tab-pane hidden space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <h2 class="text-2xl font-bold text-white">LLM Wiki 變更日誌 (Changelog)</h2>
+        <p class="text-sm text-slate-400">對應文件: <code class="text-mamba-400 font-mono">wiki/log.md</code> · 記錄所有 Ingest / Query / Lint 歷程</p>
+      </div>
+
+      <div class="relative pl-6 border-l-2 border-mamba-800/80 space-y-8">
+        <!-- Event 1 -->
+        <div class="relative group">
+          <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-emerald-500 border-4 border-carbon-950"></div>
+          <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <span class="font-mono text-xs font-bold text-emerald-400">[2026-11-11] lint</span>
+              <span class="text-xs text-slate-500">健康檢查</span>
+            </div>
+            <h3 class="text-base font-bold text-white">知識庫完整性與交叉鏈接驗證</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              驗證所有實體頁面（Entities）與指南頁面（Guides）之相互引用；核對原廠手冊 1000ml 交換量與車友社群實務 800ml 的差異性標註，確認兩者已於機油實體與更換指南中明確對比，消解矛盾。
+            </p>
+          </div>
+        </div>
+
+        <!-- Event 2 -->
+        <div class="relative group">
+          <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-cyan-500 border-4 border-carbon-950"></div>
+          <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <span class="font-mono text-xs font-bold text-cyan-400">[2026-11-11] ingest</span>
+              <span class="text-xs text-slate-500">來源攝取</span>
+            </div>
+            <h3 class="text-base font-bold text-white">建立 MMBCU 158 齒輪油更換 SOP 與規格速查表</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              自 <code class="text-xs font-mono text-slate-400">raw/sym-mmbcu-manual-excerpt.md</code> 提煉齒輪油容量規範（100~120cc），特別警告雙倍灌入易導致後軸油封衝破風險；確立 10mm 螺栓緊固扭力（1.0~1.4 kgf-m），嚴防鋁合金齒輪箱滑牙。
+            </p>
+          </div>
+        </div>
+
+        <!-- Event 3 -->
+        <div class="relative group">
+          <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-amber-500 border-4 border-carbon-950"></div>
+          <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <span class="font-mono text-xs font-bold text-amber-400">[2026-11-11] ingest</span>
+              <span class="text-xs text-slate-500">來源攝取</span>
+            </div>
+            <h3 class="text-base font-bold text-white">建立 MMBCU 158 基礎車款實體與機油保養 SOP</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              定義車型代號 TDA16T1，釐清 12mm 側邊洩油螺栓與 17mm 底濾網外蓋之分工；明確機油尺「不旋入螺牙」標準測量法；整合儀表 OIL CHANGE 提示燈 1000km 歸零重設步驟。
+            </p>
+          </div>
+        </div>
+
+        <!-- Event 4 -->
+        <div class="relative group">
+          <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-slate-500 border-4 border-carbon-950"></div>
+          <div class="p-5 rounded-xl bg-carbon-900 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <span class="font-mono text-xs font-bold text-slate-400">[2026-11-11] init</span>
+              <span class="text-xs text-slate-500">專案初始化</span>
+            </div>
+            <h3 class="text-base font-bold text-white">專案初始化與 Karpathy LLM Wiki 架構建立</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              依據 Andrej Karpathy LLM Wiki 模式建立三層架構：Raw Sources (<code class="text-xs font-mono">raw/</code>)、The Wiki (<code class="text-xs font-mono">wiki/</code>) 與 The Schema (<code class="text-xs font-mono">AGENTS.md</code>)。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-carbon-900/60 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 space-y-2">
+      <p>SYM MMBCU 158 DIY 保養知識庫 · 依照 Karpathy LLM Wiki 架構與 AGENTS.md 規範持續維護</p>
+      <p>專案可直接推送到 GitHub 並開啟 GitHub Pages 瀏覽 · 請定期更換機油齒輪油確保行車安全</p>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    // Tab Switching Logic
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-mamba-500', 'text-mamba-400');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+
+      const activePane = document.getElementById('pane-' + tabId);
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      if (activePane) activePane.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-400');
+        activeBtn.classList.add('border-mamba-500', 'text-mamba-400');
+      }
+    }
+
+    // Cheatsheet Search Filter
+    function filterCheatsheet() {
+      const q = document.getElementById('cheatsheet-search').value.toLowerCase();
+      const rows = document.querySelectorAll('#cheatsheet-table tbody tr');
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    // Default Seed Maintenance Records
+    const defaultRecords = [
+      {
+        id: 1,
+        date: '2026-08-15',
+        mileage: 300,
+        item: '換機油+齒輪油+清洗濾網',
+        oil: '原廠 SYMOIL M300 10W-40',
+        nextMileage: 1300,
+        note: '新車磨合大保養，清洗 17mm 底濾網金屬鐵屑，更換 M12+M8 鋁墊片'
+      },
+      {
+        id: 2,
+        date: '2026-09-28',
+        mileage: 1250,
+        item: '換機油',
+        oil: 'Motul 7100 10W-40',
+        nextMileage: 2250,
+        note: '機油加 820cc，油尺位置在網格 75% 處，油門反應輕快'
+      },
+      {
+        id: 3,
+        date: '2026-11-05',
+        mileage: 2300,
+        item: '換機油+齒輪油',
+        oil: 'Shell Advance 10W-40 + SYM 85W-140',
+        nextMileage: 3300,
+        note: '洩出機油清澈，齒輪箱洩油螺栓吸附微量極細鐵泥'
+      }
+    ];
+
+    // LocalStorage Key
+    const STORAGE_KEY = 'mmbcu_maintenance_records_v1';
+
+    function getStoredRecords() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) return JSON.parse(data);
+      } catch (e) {
+        console.error(e);
+      }
+      return defaultRecords;
+    }
+
+    function saveStoredRecords(records) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderRecords() {
+      const tbody = document.getElementById('records-tbody');
+      const records = getStoredRecords();
+      tbody.innerHTML = '';
+
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">目前尚無保養紀錄，請在上方表單新增第一筆！</td></tr>`;
+        return;
+      }
+
+      records.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-carbon-800/50 transition-colors';
+        tr.innerHTML = `
+          <td class="p-4 font-mono text-xs">${r.date}</td>
+          <td class="p-4 font-bold text-white">${Number(r.mileage).toLocaleString()} km</td>
+          <td class="p-4 font-semibold text-emerald-400">${r.item}</td>
+          <td class="p-4 text-xs text-slate-300">${r.oil || '-'}</td>
+          <td class="p-4 font-mono text-amber-400 font-bold">${Number(r.nextMileage).toLocaleString()} km</td>
+          <td class="p-4 text-xs text-slate-400 max-w-xs truncate" title="${r.note}">${r.note || '-'}</td>
+          <td class="p-4 text-center">
+            <button onclick="deleteRecord(${r.id})" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-1 rounded bg-rose-950/40 border border-rose-800/40 hover:bg-rose-900/60 transition-colors">
+              刪除
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function addMaintenanceRecord(e) {
+      e.preventDefault();
+      const date = document.getElementById('log-date').value;
+      const mileage = parseInt(document.getElementById('log-mileage').value, 10);
+      const item = document.getElementById('log-item').value;
+      const oil = document.getElementById('log-oil-name').value;
+      const note = document.getElementById('log-note').value;
+
+      if (!date || isNaN(mileage)) return;
+
+      const records = getStoredRecords();
+      const nextMileage = mileage + (item.includes('齒輪油') ? 1000 : 1000);
+
+      const newRecord = {
+        id: Date.now(),
+        date,
+        mileage,
+        item,
+        oil,
+        nextMileage,
+        note
+      };
+
+      records.unshift(newRecord);
+      saveStoredRecords(records);
+      renderRecords();
+
+      // Reset form
+      document.getElementById('log-mileage').value = '';
+      document.getElementById('log-oil-name').value = '';
+      document.getElementById('log-note').value = '';
+    }
+
+    function deleteRecord(id) {
+      let records = getStoredRecords();
+      records = records.filter(r => r.id !== id);
+      saveStoredRecords(records);
+      renderRecords();
+    }
+
+    function exportLogsCSV() {
+      const records = getStoredRecords();
+      let csv = "\uFEFF序號,日期,里程(km),項目,油品規格,下次建議里程(km),備註\n";
+      records.forEach((r, idx) => {
+        csv += `${idx + 1},"${r.date}",${r.mileage},"${r.item}","${r.oil || ''}",${r.nextMileage},"${(r.note || '').replace(/"/g, '""')}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mmbcu_maintenance_records_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Set today's date in form on init
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const dateInput = document.getElementById('log-date');
+      if (dateInput) dateInput.value = today;
+      renderRecords();
+    });
+  </script>
+</body>
+</html>
